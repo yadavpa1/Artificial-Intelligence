@@ -1,1 +1,120 @@
+package WaterJugUsingBFS;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Scanner;
+import java.util.Stack;
 
+public class WaterJug {
+    public static int jug1,jug2,t1,t2;
+    public static Stack<Node> path=new Stack<>();
+    public static Node root=new Node(0,0);
+    
+    public static void main(String[] args) { 
+        Scanner sc=new Scanner(System.in);
+        System.out.println("Enter the capacity of 2 jugs");
+        jug1=sc.nextInt(); //3
+        jug2=sc.nextInt();//4
+        System.out.println("Enter the required capacity of 2 jugs");
+        t1=sc.nextInt(); //0
+        t2=sc.nextInt(); //2
+        BFS(root,path);
+        if(path.empty())
+            System.out.println("Target cannot be reached");
+        else{
+            System.out.println("Number of moves to reach the target: "+ (path.size()-1));
+            while(!path.empty()){
+                System.out.println(path.peek());
+                path.pop();
+            }
+        }      
+    }
+    public static void BFS(Node root,Stack path){
+        Node n,goal=new Node(-1,-1);
+        Queue<Node> queue=new LinkedList<>();
+        queue.add(root);
+        Map<Node,Node> parentOf=new HashMap<>();
+        Node dummy=new Node(-2,-2);
+        parentOf.put(root,dummy);
+        while(!queue.isEmpty()){
+            Node node=queue.poll(); //current state
+            if(node.x==t1 && node.y==t2){
+                goal=node;
+                break;
+            }
+             //Rule 1: Fill the first jug
+             //(x,y)->(jug1,y) if x<jug1
+             if(node.x <jug1){
+                 n=new Node(jug1,node.y);
+                 if(!parentOf.containsKey(n)){
+                    queue.add(n);
+                    parentOf.put(n,node);
+                 }
+             }
+             //Rule 2:Fill the second jug
+             //(x,y)->(x,jug2) if y<jug2
+             if(node.y<jug2){
+                 n=new Node(node.x,jug2);
+                 if(!parentOf.containsKey(n)){
+                    queue.add(n);
+                    parentOf.put(n,node);
+                 }
+             }
+             //Rule 3:Empty the first jug
+             //(x,y)->(0,y) if x>0
+             if(node.x>0){
+                 n=new Node(0,node.y);
+                 if(!parentOf.containsKey(n)){
+                    queue.add(n);
+                    parentOf.put(n,node);
+                 }
+             }
+             //Rule 4:Empty the second jug
+             //(x,y)->(x,0) if y>0
+             if(node.y>0){
+                 n=new Node(node.x,0);
+                if(!parentOf.containsKey(n)){
+                    queue.add(n);
+                    parentOf.put(n,node);
+                 }
+             }
+             //Rule 5:Pour water from 2nd jug into 1st jug until the 1st jug is full or 2nd jug is empty
+             //(x,y)->(min(jug1,x+y),max(x+y-jug1,0) if y>0
+             if(node.y>0){
+                 n=new Node(Math.min(jug1,node.x+node.y),Math.max(0,node.x+node.y-jug1));
+                 if(!parentOf.containsKey(n)){
+                    queue.add(n);
+                    parentOf.put(n,node);
+                 }
+             }
+             //Rule 6:Pour water from first jug to second until the second jug is full or first jug is empty
+             //(x,y)->(max(0,x+y-jug2),min(jug2,x+y)) if x>0
+             if(node.x>0){
+                 n=new Node(Math.max(0,node.x+node.y-jug2),Math.min(jug2,node.x+node.y));
+                 if(!parentOf.containsKey(n)){
+                    queue.add(n);
+                    parentOf.put(n,node);
+                 }
+             }   
+        }  
+        if(goal.x==-1 || goal.y==-1)
+            return;
+        path.add(goal);
+        while(parentOf.get(path.peek())!=dummy)
+            path.add(parentOf.get(path.peek()));
+    }
+}
+
+
+public class Node {
+    int x,y;
+    public Node(int x,int y){
+        this.x=x;
+        this.y=y;
+    }
+    public String toString(){
+        return "("+x+","+y+")";
+    }
+    
+}
