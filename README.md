@@ -1,4 +1,4 @@
-# Artificial-Intelligence
+# Artificial Intelligence
 Simple Hill Climbing on Griewank Function
 ==========================================================================================================
 Pre-requistes:
