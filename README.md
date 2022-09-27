@@ -1,5 +1,5 @@
 # Artificial-Intelligence
-Simple Hill Climbing on Griewank Function :
+Simple Hill Climbing on Griewank Function
 ==========================================================================================================
 Pre-requistes:
 1. Matplotlib library
